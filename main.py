@@ -23,24 +23,31 @@ class TutorAI:
                 self.updated_prompt_stages.append(self.prompt_stages[0]+self.topic)
             else:
                 self.updated_prompt_stages.append(self.prompt_stages[i])
-    def custom_chat(self, question):
+
+    async def custom_chat(self, question, ctx):
         self.messages.append({"role": "user", "content": question})
         response = openai.ChatCompletion.create(
             model=self.model,
             messages=self.messages,
             max_tokens=self.token,
         )
-        self.messages.append({"role": "assistant", "content": response.choices[0].message.content})
-        return response.choices[0].message.content
-    def chat(self, stage):
+        message = response.choices[0].message.content
+        self.messages.append({"role": "assistant", "content": message})
+        await ctx.send(message)  # send message to Discord channel
+        return message
+
+    async def chat(self, stage, ctx):
         self.messages.append({"role": "user", "content": str(self.updated_prompt_stages[stage])})
         response = openai.ChatCompletion.create(
             model=self.model,
             messages=self.messages,
             max_tokens=self.token,
         )
-        self.messages.append({"role": "assistant", "content": response.choices[0].message.content})
-        return response.choices[0].message.content
+        message = response.choices[0].message.content
+        self.messages.append({"role": "assistant", "content": message})
+        await ctx.send(message)  # send message to Discord channel
+        return message
+
     
     def run(self):
         self.topic = input("Topic: ")
