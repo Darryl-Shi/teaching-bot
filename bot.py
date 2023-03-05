@@ -26,6 +26,7 @@ async def start_conversation(ctx, topic=None):
         tutor.add_topic(tutor.topic)
         i = 0  # start at stage 1
         await tutor.chat(i, ctx)  # convert stage number to string before passing to chat method
+        await ctx.send("Any further command can be run by responding to the first message!")
         while True:
             try:
                 user_input = await bot.wait_for('message', check=lambda m: m.author == ctx.author, timeout=120.0)
@@ -43,5 +44,8 @@ async def start_conversation(ctx, topic=None):
                 break
     else:
         await ctx.send("Please specify a topic. Usage: !learn <topic>")
-
+@bot.event()
+async def on_message(message):
+    if bot.user.mentioned_in(message):
+        await ctx.send("Hi! To start learning, use the learn command. Any further command can be run by responding to the first message! Usage: !learn <topic>")
 bot.run(TOKEN)
