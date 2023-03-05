@@ -43,14 +43,14 @@ class TutorAI:
         print(self.chat(question, firstrun=True, token=100))
         string = "\n".join(self.subtopics)
         print(string)
-        subtopic_no = input("Enter a number: ")
-        print(self.chat(message=subtopic_no, firstrun=False, token=1000))
+        while True:
+            subtopic_no = input("Enter a number: ")
+            if subtopic_no == "end":
+                break
+            print(self.chat(message=subtopic_no, firstrun=False, token=1000))
 
 if __name__ == "__main__":
     question = input("Enter a topic: ")
 
     tutor = TutorAI(question)
     tutor.run()
-
-# tutor = TutorAI("What is the meaning of life?")
-# tutor.chat("what is the meaning of life?", True, 100)
