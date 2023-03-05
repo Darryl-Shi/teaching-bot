@@ -24,7 +24,6 @@ async def on_message(message):
     if bot.user.mentioned_in(message):
         await message.channel.send("Hi! To start learning, use the learn command. Any further command can be run by responding to the first message! Usage: !learn <topic>")
     await bot.process_commands(message) # this line is required to enable the bot to process commands after processing the event
-
 @bot.command(name='learn')
 async def start_conversation(ctx, topic=None):
     if topic:
