@@ -19,6 +19,12 @@ tutor = TutorAI()
 @bot.event
 async def on_ready():
     print(f'{bot.user} is connected')
+@bot.event
+async def on_message(message):
+    if bot.user.mentioned_in(message):
+        await message.channel.send("Hi! To start learning, use the learn command. Any further command can be run by responding to the first message! Usage: !learn <topic>")
+    await bot.process_commands(message) # this line is required to enable the bot to process commands after processing the event
+
 @bot.command(name='learn')
 async def start_conversation(ctx, topic=None):
     if topic:
@@ -44,8 +50,4 @@ async def start_conversation(ctx, topic=None):
                 break
     else:
         await ctx.send("Please specify a topic. Usage: !learn <topic>")
-@bot.event()
-async def on_message(message):
-    if bot.user.mentioned_in(message):
-        await ctx.send("Hi! To start learning, use the learn command. Any further command can be run by responding to the first message! Usage: !learn <topic>")
 bot.run(TOKEN)
