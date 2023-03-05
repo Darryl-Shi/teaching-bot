@@ -12,7 +12,7 @@ class TutorAI:
         self.subtopics = []
         self.prompt=os.getenv("PROMPT")
         self.messages = []
-        self.token = os.getenv("TOKEN")
+        self.token = int(os.getenv("TOKEN"))
         openai.api_key = self.api_key
 
     def chat(self, message, firstrun, token):
