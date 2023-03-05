@@ -44,8 +44,8 @@ class TutorAI:
         string = "\n".join(self.subtopics)
         print(string)
         while True:
-            subtopic_no = input("Enter a number: ")
-            if subtopic_no == "end":
+            subtopic_no = input("Enter a number (or exit to quit): ")
+            if subtopic_no == "exit":
                 break
             print(self.chat(message=subtopic_no, firstrun=False, token=1000))
 
