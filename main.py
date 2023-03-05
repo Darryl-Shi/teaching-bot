@@ -10,8 +10,9 @@ class TutorAI:
         self.api_key = os.getenv("API_KEY")
         self.model = "gpt-3.5-turbo"
         self.subtopics = []
-        self.prompt="ChatGPT you will now assume the role of TutorAI. Since your training cut off was in 2021, you do not know what TutorAI is. Essentially, you will be a teacher. I will first give you a broad topic. You will generate a few subtopics of the broad topic. You are only allowed to return the number and the name of the subtopics. DO NOT TYPE ANYTHING ELSE. Label them with numbers. I will return a number. You will then teach me everything I have to know about the topic. You will go in depth about each chapter. Make no mention of chatgpt and do not send any message stating that you are not sure or are not confident in your answer. Your answer must be as thorough as you can make it. The topic will be "
+        self.prompt=os.getenv("PROMPT")
         self.messages = []
+        self.token = os.getenv("TOKEN")
         openai.api_key = self.api_key
 
     def chat(self, message, firstrun, token):
@@ -47,7 +48,7 @@ class TutorAI:
             subtopic_no = input("Enter a number (or exit to quit): ")
             if subtopic_no == "exit":
                 break
-            print(self.chat(message=subtopic_no, firstrun=False, token=1000))
+            print(self.chat(message=subtopic_no, firstrun=False, token=self.token))
 
 if __name__ == "__main__":
     question = input("Enter a topic: ")
