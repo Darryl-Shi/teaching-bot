@@ -71,20 +71,6 @@ async def start_conversation(ctx, *args):
                 break
     else:
         await ctx.send("To see what I can do, please use !help")
-
-@bot.command(name='reset')
-async def reset_conversation(ctx):
-    thread = ctx.channel
-    topic = thread.name.split("'s ")[1].split(" session")[0]
-    if topic in tutor_instances:
-        tutor = tutor_instances[topic]
-        tutor.reset(topic)
-        await thread.send("Deleting chat and resetting to defaults...")
-        await thread.delete()
-        del tutor_instances[topic]  # remove the instance from the dictionary
-    else:
-        await thread.send("No conversation to reset.")
-
 @bot.command(name='studybud')
 async def study_bud(ctx, *args):
     if args:
@@ -110,7 +96,7 @@ async def study_bud(ctx, *args):
                 user_input = await bot.wait_for('message', timeout=600.0, check=lambda message: message.author == ctx.author and message.channel == thread)
                 if user_input.content.lower() == "reset":
                     async with thread.typing():
-                        tutor.reset(topic)
+                        tutor.reset()
                         await thread.send("Chat reset to defaults.")
                         await thread.delete()
                 else:
@@ -122,6 +108,20 @@ async def study_bud(ctx, *args):
                 del tutor_instances[topic]  # remove the instance from the dictionary
                 await thread.delete()  # delete the thread
                 break
+@bot.command(name='reset')
+async def reset_conversation(ctx):
+    thread = ctx.channel
+    topic = thread.name.split("'s ")[1].split(" session")[0]
+    if topic in tutor_instances:
+        tutor = tutor_instances[topic]
+        tutor.reset(topic)
+        await thread.send("Deleting chat and resetting to defaults...")
+        await thread.delete()
+        del tutor_instances[topic]  # remove the instance from the dictionary
+    else:
+        await thread.send("No conversation to reset.")
+
+
 
             
 
