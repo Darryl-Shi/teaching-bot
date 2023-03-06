@@ -112,6 +112,7 @@ async def study_bud(ctx, *args):
                     async with thread.typing():
                         tutor.reset(topic)
                         await thread.send("Chat reset to defaults.")
+                        await thread.delete()
                 else:
                     async with thread.typing():
                         asyncio.create_task(tutor.studybuddy_interactive(user_input.content, thread))
