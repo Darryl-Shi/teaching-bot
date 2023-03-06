@@ -45,12 +45,25 @@ async def start_conversation(ctx, topic=None):
         await thread.send(ctx.author.mention)
         while True:
             try:
-                user_input = await bot.wait_for('message_create', check=lambda m: m.author == ctx.author and m.channel == thread, timeout=600.0)
+                user_input = await bot.wait_for('message', timeout=600.0, check=lambda message: message.author == ctx.author and message.channel == thread)
                 if user_input.content.lower() == "next":
                     async with thread.typing():
                         i += 1
                         asyncio.create_task(tutor.chat(topic, i, thread))
                         await thread.send("To end the session, type !reset")
+                elif user_input.content.lower() == "reset":
+                    async with thread.typing():
+                        tutor.reset(topic)
+                        await thread.send("Chat reset to defaults.")
+                        i = 0
+                        asyncio.create_task(tutor.chat(topic, i, thread))
+                        await thread.send("To end the session, type !reset")
+                elif user_input.content.lower() == "exit":
+                    async with thread.typing():
+                        await thread.send("Ending conversation...")
+                        del tutor_instances[topic]  # remove the instance from the dictionary
+                        await thread.delete()  # delete the thread
+                        break
                 else:
                     async with thread.typing():
                         asyncio.create_task(tutor.custom_chat(topic, user_input.content, thread))
