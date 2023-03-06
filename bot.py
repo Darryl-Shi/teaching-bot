@@ -25,12 +25,9 @@ async def start_conversation(ctx, topic=None):
     if topic:
         # create a new thread to start the conversation
         thread = await ctx.channel.create_thread(name=f"{ctx.author.name}'s {topic} session")
-        tutor.topic = topic
-        #delete the original message
-        await ctx.message.delete()
-        tutor.add_topic(tutor.topic)
+        tutor.add_topic(topic)
         i = 0  # start at stage 1
-        await tutor.chat(i, thread) # convert stage number to string before passing to chat method
+        await tutor.chat(topic, i, thread) # convert stage number to string before passing to chat method
         await thread.send("Any further command can be run by responding to the first message!")
         await thread.send("To end the session, type !reset")
         await thread.send(ctx.author.mention)
@@ -40,14 +37,17 @@ async def start_conversation(ctx, topic=None):
                 if user_input.content.lower() == "next":
                     async with thread.typing():
                         i += 1
-                        await thread.send(tutor.chat(i, thread))
+                        await tutor.chat(topic, i, thread)
                         await thread.send("To end the session, type !reset")
                 elif user_input.content.lower() == "reset":
                     async with thread.typing():
-                        reset_conversation(thread)
+                        tutor.reset(topic)
+                        await thread.send("Deleting chat and resetting to defaults...")
+                        thread_id = thread.channel
+                        await thread_id.delete()
                 else:
                     async with thread.typing():
-                        await tutor.custom_chat(user_input.content, thread)  # also convert stage number to string here
+                        await tutor.custom_chat(topic, user_input.content, thread)
                         await thread.send("To end the session, type !reset")
             except asyncio.TimeoutError:
                 await thread.send("Conversation timed out.")
