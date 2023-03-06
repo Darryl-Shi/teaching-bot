@@ -74,6 +74,14 @@ class TutorAI:
       else:
         print(self.custom_chat(
           user_input))  # also convert stage number to string here
+  def reset(self):
+      self.subtopics = []
+      self.messages = []
+      self.updated_prompt_stages = []
+      self.topic = ""
+
+        # Reset the prompt stages using the original values
+      self.updated_prompt_stages = self.prompt_stages.copy()
 
 
 if __name__ == "__main__":
