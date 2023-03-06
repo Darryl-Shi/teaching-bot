@@ -59,7 +59,8 @@ async def start_conversation(ctx, topic=None):
 async def reset_conversation(thread):
     tutor.reset()
     await thread.send("Deleting chat and resetting to defaults...")
-    await thread.delete()
+    thread_id = bot.get_channel(thread_id)
+    await thread_id.delete()
 
 @bot.command(name='help')
 async def display_help(ctx):
