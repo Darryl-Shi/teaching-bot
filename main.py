@@ -16,7 +16,7 @@ class TutorAI:
       "Create an outline with 4 sections for teaching a student about the topic and module and number it. If you receive the input 'back', go back to the previous stage.",
       "Teach a student about the below topic and subtopic and by writing multiple paragraphs and number it. If you receive the input 'back', go back to the previous stage"
     ]
-    self.studybuddy = "A student is going to do his homework. Throughtout the process of him doing homework, he will ask you some questions. You will have to answer the questions. The subject that will be focused on is ."
+    self.studybuddy = "A student is going to do his homework. Throughtout the process of him doing homework, he will ask you some questions. You will have to answer the questions. Do not say anything else unless it is the answer to a question asked by the student. You can just say Ready To Go! to acknoledge this message. The subject that will be focused on is ."
     self.token = int(os.getenv("TOKEN"))
     self.studybuddy_messages = []
     self.updated_prompt_stages = []
