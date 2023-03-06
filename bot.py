@@ -96,9 +96,7 @@ async def study_bud(ctx, *args):
                 user_input = await bot.wait_for('message', timeout=600.0, check=lambda message: message.author == ctx.author and message.channel == thread)
                 if user_input.content.lower() == "reset":
                     async with thread.typing():
-                        tutor.reset()
                         await thread.send("Chat reset to defaults.")
-                        await thread.delete()
                 else:
                     async with thread.typing():
                         asyncio.create_task(tutor.studybuddy_interactive(user_input.content, thread))
@@ -113,8 +111,6 @@ async def reset_conversation(ctx):
     thread = ctx.channel
     topic = thread.name.split("'s ")[1].split(" session")[0]
     if topic in tutor_instances:
-        tutor = tutor_instances[topic]
-        tutor.reset(topic)
         await thread.send("Deleting chat and resetting to defaults...")
         await thread.delete()
         del tutor_instances[topic]  # remove the instance from the dictionary
