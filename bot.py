@@ -56,14 +56,14 @@ async def start_conversation(ctx, topic=None):
                 await ctx.send("Conversation timed out.")
                 break
     else:
-        await ctx.send("Please specify a topic. Usage: !learn <topic>")
+        await ctx.send("To see what I can do, please use !help")
 
 @bot.command(name='reset')
 async def reset_conversation(ctx):
     tutor.reset()
     await ctx.send("Chat has been reset to default.")
 
-@bot.command(name='commands')
+@bot.command(name='help')
 async def display_help(ctx):
     help_msg = "To start a conversation with me, use the !learn command followed by the topic you want to learn about. For example: `!learn python`.\n\nWhile in a conversation with me, you can enter the following commands:\n\n`next`: move to the next stage of the conversation\n`reset`: reset the conversation to the default stage\n`exit`: end the conversation\n\nYou can also type any other message to send it to me and continue the conversation."
     await ctx.send(help_msg)
