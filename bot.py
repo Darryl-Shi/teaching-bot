@@ -95,7 +95,7 @@ async def reset_conversation(ctx):
 
 @bot.command(name='help')
 async def display_help(ctx):
-    help_msg = "To start a conversation with me, use the !learn command followed by the topic you want to learn about. For example: `!learn python`.\n\nWhile in a conversation with me, you can enter the following commands:\n\n`next`: move to the next stage of the conversation\n`reset`: reset the conversation to the default stage\n`exit`: end the conversation\n\nYou can also reply to any other message to send it to me and continue the conversation."
+    help_msg = "To start a conversation with me, use the !learn command followed by the topic you want to learn about. For example: `!learn python`.\n\nWhile in a conversation with me, you can just use regular English to ask me questions. If you want to end the conversation, type `!reset`."
     await ctx.send(help_msg)
 
 bot.run(TOKEN)
