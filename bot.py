@@ -58,6 +58,7 @@ async def start_conversation(ctx, topic=None):
             except asyncio.TimeoutError:
                 await thread.send("Conversation timed out.")
                 del tutor_instances[topic]  # remove the instance from the dictionary
+                await thread.delete()  # delete the thread
                 break
     else:
         await ctx.send("To see what I can do, please use !help")
