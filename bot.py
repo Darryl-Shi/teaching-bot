@@ -45,7 +45,7 @@ async def start_conversation(ctx, topic=None):
         await thread.send(ctx.author.mention)
         while True:
             try:
-                user_input = await bot.wait_for('message_create', check=lambda m: m.author == ctx.author and m.channel == thread, timeout=120.0)
+                user_input = await bot.wait_for('message_create', check=lambda m: m.author == ctx.author and m.channel == thread, timeout=600.0)
                 if user_input.content.lower() == "next":
                     async with thread.typing():
                         i += 1
@@ -53,7 +53,7 @@ async def start_conversation(ctx, topic=None):
                         await thread.send("To end the session, type !reset")
                 else:
                     async with thread.typing():
-                        await asyncio.create_task(tutor.custom_chat(topic, user_input.content, thread))
+                        tutor.custom_chat(topic, user_input.content, thread)
                         await thread.send("To end the session, type !reset")
             except asyncio.TimeoutError:
                 await thread.send("Conversation timed out.")
