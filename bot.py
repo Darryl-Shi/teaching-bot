@@ -44,13 +44,7 @@ async def start_conversation(ctx, topic=None):
                         await thread.send("To end the session, type !reset")
                 elif user_input.content.lower() == "reset":
                     async with thread.typing():
-                        tutor.reset()
-                        tutor.add_topic(tutor.topic)
-                        i = 0
-                        await tutor.chat(i, thread)
-                        await thread.send("Chat has been reset to default.")
-                        #delete thread
-                        await thread.delete()
+                        reset_conversation(thread)
                 else:
                     async with thread.typing():
                         await tutor.custom_chat(user_input.content, thread)  # also convert stage number to string here
@@ -62,9 +56,10 @@ async def start_conversation(ctx, topic=None):
         await ctx.send("To see what I can do, please use !help")
 
 @bot.command(name='reset')
-async def reset_conversation(ctx):
+async def reset_conversation(thread):
     tutor.reset()
-    await ctx.send("Chat has been reset to default.")
+    await thread.send("Deleting chat and resetting to defaults...")
+    await thread.delete()
 
 @bot.command(name='help')
 async def display_help(ctx):
