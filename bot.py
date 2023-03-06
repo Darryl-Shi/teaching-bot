@@ -1,20 +1,23 @@
-import discord
-from discord.ext import commands
 from dotenv import load_dotenv
 import os
 import json
+import asyncio
+import time
+import discord as pycord
+from discord.ext import commands
 
 from main import TutorAI
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 PREFIX = "!"
-intents = discord.Intents.default()
+intents = pycord.Intents.default()
 intents.members = True
 intents.message_content = True
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
-tutor = TutorAI()
 bot.remove_command('help')
+
+tutor_instances = {}  # dictionary to store TutorAI instances
 
 @bot.event
 async def on_ready():
@@ -23,8 +26,17 @@ async def on_ready():
 @bot.command(name='learn')
 async def start_conversation(ctx, topic=None):
     if topic:
+        existing_threads = ctx.channel.threads
+        for thread in existing_threads:
+            if thread.name == f"{ctx.author.name}'s {topic} session":
+                await ctx.send(f"You already have an active session on {topic}. Please use that instead.")
         # create a new thread to start the conversation
-        thread = await ctx.channel.create_thread(name=f"{ctx.author.name}'s {topic} session")
+        thread = await ctx.channel.create_thread(name=f"{ctx.author.name}'s {topic} session"); print("Thread created")
+
+        if topic not in tutor_instances:
+            tutor_instances[topic] = TutorAI()
+            print(tutor_instances)
+        tutor = tutor_instances[topic]
         tutor.add_topic(topic)
         i = 0  # start at stage 1
         await tutor.chat(topic, i, thread) # convert stage number to string before passing to chat method
@@ -33,34 +45,37 @@ async def start_conversation(ctx, topic=None):
         await thread.send(ctx.author.mention)
         while True:
             try:
-                user_input = await bot.wait_for('message', check=lambda m: m.author == ctx.author, timeout=120.0)
+                user_input = await bot.wait_for('message_create', check=lambda m: m.author == ctx.author and m.channel == thread, timeout=120.0)
                 if user_input.content.lower() == "next":
                     async with thread.typing():
                         i += 1
-                        await tutor.chat(topic, i, thread)
+                        asyncio.create_task(tutor.chat(topic, i, thread))
                         await thread.send("To end the session, type !reset")
-                elif user_input.content.lower() == "reset":
-                    async with thread.typing():
-                        tutor.reset(topic)
-                        await thread.send("Deleting chat and resetting to defaults...")
-                        thread_id = thread.channel
-                        await thread_id.delete()
                 else:
                     async with thread.typing():
-                        await tutor.custom_chat(topic, user_input.content, thread)
+                        asyncio.create_task(tutor.custom_chat(topic, user_input.content, thread))
                         await thread.send("To end the session, type !reset")
             except asyncio.TimeoutError:
                 await thread.send("Conversation timed out.")
+                del tutor_instances[topic]  # remove the instance from the dictionary
                 break
     else:
         await ctx.send("To see what I can do, please use !help")
 
 @bot.command(name='reset')
-async def reset_conversation(thread):
-    tutor.reset()
-    await thread.send("Deleting chat and resetting to defaults...")
-    thread_id = thread.channel
-    await thread_id.delete()
+async def reset_conversation(ctx):
+    thread = ctx.channel
+    topic = thread.name.split("'s ")[1].split(" session")[0]
+    if topic in tutor_instances:
+        tutor = tutor_instances[topic]
+        tutor.reset(topic)
+        await thread.send("Deleting chat and resetting to defaults...")
+        await thread.delete()
+        del tutor_instances[topic]  # remove the instance from the dictionary
+    else:
+        await thread.send("No conversation to reset.")
+
+
 
 @bot.command(name='help')
 async def display_help(ctx):

@@ -16,6 +16,7 @@ class TutorAI:
       "Create an outline with 4 sections for teaching a student about the topic and module and number it. If you receive the input 'back', go back to the previous stage.",
       "Teach a student about the below topic and subtopic and by writing multiple paragraphs and number it. If you receive the input 'back', go back to the previous stage"
     ]
+    self.token = int(os.getenv("TOKEN"))
     self.updated_prompt_stages = []
     openai.api_key = self.api_key
 
