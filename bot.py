@@ -3,7 +3,7 @@ import os
 import json
 import asyncio
 import time
-import discord as pycord
+import discord
 from discord.ext import commands
 
 from main import TutorAI
@@ -11,7 +11,7 @@ from main import TutorAI
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 PREFIX = "!"
-intents = pycord.Intents.default()
+intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
@@ -21,9 +21,8 @@ tutor_instances = {}  # dictionary to store TutorAI instances
 @bot.event
 async def on_ready():
     print(f'{bot.user} is connected')
-
-activity = discord.Activity(type=discord.ActivityType.listening, name="!help")
-bot.change_presence(activity=activity)
+    activity = discord.Activity(type=discord.ActivityType.listening, name="!help")
+    await bot.change_presence(activity=activity)
 
 
 @bot.command(name='learn')
