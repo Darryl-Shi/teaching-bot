@@ -18,10 +18,13 @@ bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 bot.remove_command('help')
 
 tutor_instances = {}  # dictionary to store TutorAI instances
-
 @bot.event
 async def on_ready():
     print(f'{bot.user} is connected')
+
+activity = discord.Activity(type=discord.ActivityType.listening, name="!help")
+bot.change_presence(activity=activity)
+
 
 @bot.command(name='learn')
 async def start_conversation(ctx, *args):
