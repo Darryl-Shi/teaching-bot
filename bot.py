@@ -24,15 +24,17 @@ async def on_ready():
     print(f'{bot.user} is connected')
 
 @bot.command(name='learn')
-async def start_conversation(ctx, topic=None):
-    if topic:
+async def start_conversation(ctx, *args):
+    if args:
+        topic = " ".join(args)
         existing_threads = ctx.channel.threads
         for thread in existing_threads:
             if thread.name == f"{ctx.author.name}'s {topic} session":
                 await ctx.send(f"You already have an active session on {topic}. Please use that instead.")
         # create a new thread to start the conversation
         thread = await ctx.channel.create_thread(name=f"{ctx.author.name}'s {topic} session"); print("Thread created")
-
+        #delete original message
+        await ctx.message.delete()
         if topic not in tutor_instances:
             tutor_instances[topic] = TutorAI()
             print(tutor_instances)
