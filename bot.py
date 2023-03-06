@@ -53,7 +53,7 @@ async def start_conversation(ctx, topic=None):
                         await thread.send("To end the session, type !reset")
                 else:
                     async with thread.typing():
-                        tutor.custom_chat(topic, user_input.content, thread)
+                        asyncio.create_task(tutor.custom_chat(topic, user_input.content, thread))
                         await thread.send("To end the session, type !reset")
             except asyncio.TimeoutError:
                 await thread.send("Conversation timed out.")
