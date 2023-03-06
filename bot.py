@@ -60,14 +60,6 @@ async def start_conversation(ctx, *args):
                         tutor.reset(topic)
                         await thread.send("Chat reset to defaults.")
                         i = 0
-                        asyncio.create_task(tutor.chat(topic, i, thread))
-                        await thread.send("To end the session, type !reset")
-                elif user_input.content.lower() == "exit":
-                    async with thread.typing():
-                        await thread.send("Ending conversation...")
-                        del tutor_instances[topic]  # remove the instance from the dictionary
-                        await thread.delete()  # delete the thread
-                        break
                 else:
                     async with thread.typing():
                         asyncio.create_task(tutor.custom_chat(topic, user_input.content, thread))
@@ -93,11 +85,48 @@ async def reset_conversation(ctx):
     else:
         await thread.send("No conversation to reset.")
 
+@bot.command(name='studybud')
+async def study_bud(ctx, *args):
+    if args:
+        topic = " ".join(args)
+        existing_threads = ctx.channel.threads
+        for thread in existing_threads:
+            if thread.name == f"{ctx.author.name}'s {topic} session":
+                await ctx.send(f"You already have an active session on {topic}. Please use that instead.")
+        # create a new thread to start the conversation
+        thread = await ctx.channel.create_thread(name=f"{ctx.author.name}'s {topic} session"); print("Thread created")
+        #delete original message
+        await ctx.message.delete()
+        if topic not in tutor_instances:
+            tutor_instances[topic] = TutorAI()
+            print(tutor_instances)
+        tutor = tutor_instances[topic]
+        tutor.studybuddy_init(topic)
+        await thread.send("Study Session ready! Feel free to ask questions!")
+        await thread.send("To end the session, type !reset")
+        await thread.send(ctx.author.mention)
+        while True:
+            try:
+                user_input = await bot.wait_for('message', timeout=600.0, check=lambda message: message.author == ctx.author and message.channel == thread)
+                if user_input.content.lower() == "reset":
+                    async with thread.typing():
+                        tutor.reset(topic)
+                        await thread.send("Chat reset to defaults.")
+                else:
+                    async with thread.typing():
+                        asyncio.create_task(tutor.studybuddy_interactive(topic, user_input.content, thread))
+                        await thread.send("To end the session, type !reset")
+            except asyncio.TimeoutError:
+                await thread.send("Conversation timed out.")
+                del tutor_instances[topic]  # remove the instance from the dictionary
+                await thread.delete()  # delete the thread
+                break
 
+            
 
 @bot.command(name='help')
 async def display_help(ctx):
-    help_msg = "To start a conversation with me, use the !learn command followed by the topic you want to learn about. For example: `!learn python`.\n\nWhile in a conversation with me, you can just use regular English to ask me questions. If you want to end the conversation, type `!reset`."
+    help_msg = "To start a conversation with me, use the !learn or the !studybud command followed by the topic you want to learn about/study. For example: `!learn python` or `!studybud python` command. \n\nWhile in a conversation with me, you can just use regular English to ask me questions. The !learn command teaches you about the topic you ask about and the !studybud command turns the bot into a study buddy who can answer any questions you have about your work. If you want to end the conversation, type `!reset`."
     await ctx.send(help_msg)
 
 bot.run(TOKEN)

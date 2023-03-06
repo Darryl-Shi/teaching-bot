@@ -16,7 +16,9 @@ class TutorAI:
       "Create an outline with 4 sections for teaching a student about the topic and module and number it. If you receive the input 'back', go back to the previous stage.",
       "Teach a student about the below topic and subtopic and by writing multiple paragraphs and number it. If you receive the input 'back', go back to the previous stage"
     ]
+    self.studybuddy = "A student is going to do his homework. Throughtout the process of him doing homework, he will ask you some questions. You will have to answer the questions. The subject that will be focused on is ."
     self.token = int(os.getenv("TOKEN"))
+    self.studybuddy_messages = []
     self.updated_prompt_stages = []
     openai.api_key = self.api_key
 
@@ -47,6 +49,30 @@ class TutorAI:
       "role": "user",
       "content": str(self.updated_prompt_stages[stage])
     })
+    response = openai.ChatCompletion.create(
+      model=self.model,
+      messages=messages,
+      max_tokens=self.token,
+    )
+    message = response.choices[0].message.content
+    messages.append({"role": "assistant", "content": message})
+    await thread.send(message)  # send message to Discord channel
+
+  async def studybuddy_init(self, subj, thread):
+    messages = self.studybuddy_messages
+    messages.append({"role": "user", "content": str(self.studybuddy+subj)})
+    response = openai.ChatCompletion.create(
+      model=self.model,
+      messages=messages,
+      max_tokens=self.token,
+    )
+    message = response.choices[0].message.content
+    messages.append({"role": "assistant", "content": message})
+    await thread.send(message)  # send message to Discord channel
+    
+  async def studybuddy_interactive(self, question, thread):
+    messages = self.studybuddy_messages
+    messages.append({"role": "user", "content": str(question)})
     response = openai.ChatCompletion.create(
       model=self.model,
       messages=messages,
