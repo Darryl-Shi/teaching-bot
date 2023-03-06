@@ -29,7 +29,7 @@ class TutorAI:
       else:
         self.updated_prompt_stages.append(self.prompt_stages[i])
 
-  async def custom_chat(self, question, ctx):
+  async def custom_chat(self, question, thread):
     self.messages.append({"role": "user", "content": question})
     response = openai.ChatCompletion.create(
       model=self.model,
@@ -38,10 +38,10 @@ class TutorAI:
     )
     message = response.choices[0].message.content
     self.messages.append({"role": "assistant", "content": message})
-    await ctx.send(message)  # send message to Discord channel
+    await thread.send(message)  # send message to Discord channel
     return message
 
-  async def chat(self, stage, ctx):
+  async def chat(self, stage, thread):
     self.messages.append({
       "role": "user",
       "content": str(self.updated_prompt_stages[stage])
@@ -53,8 +53,7 @@ class TutorAI:
     )
     message = response.choices[0].message.content
     self.messages.append({"role": "assistant", "content": message})
-    await ctx.send(message)  # send message to Discord channel
-    return message
+    await thread.send(message)  # send message to Discord channel
 
   def run(self):
     self.topic = input("Topic: ")
