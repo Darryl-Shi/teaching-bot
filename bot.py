@@ -114,7 +114,7 @@ async def study_bud(ctx, *args):
                         await thread.send("Chat reset to defaults.")
                 else:
                     async with thread.typing():
-                        asyncio.create_task(tutor.studybuddy_interactive(topic, user_input.content, thread))
+                        asyncio.create_task(tutor.studybuddy_interactive(user_input.content, thread))
                         await thread.send("To end the session, type !reset")
             except asyncio.TimeoutError:
                 await thread.send("Conversation timed out.")
