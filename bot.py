@@ -101,7 +101,7 @@ async def study_bud(ctx, *args):
             tutor_instances[topic] = TutorAI()
             print(tutor_instances)
         tutor = tutor_instances[topic]
-        tutor.studybuddy_init(topic, thread)
+        await tutor.studybuddy_init(topic, thread)
         await thread.send("Study Session ready! Feel free to ask questions!")
         await thread.send("To end the session, type !reset")
         await thread.send(ctx.author.mention)
