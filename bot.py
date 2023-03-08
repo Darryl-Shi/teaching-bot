@@ -50,11 +50,14 @@ async def start_conversation(ctx, *args):
         while True:
             try:
                 user_input = await bot.wait_for('message', timeout=600.0, check=lambda message: message.author == ctx.author and message.channel == thread)
+                if len(tutor.topics[topic]["messages"]) > 5:
+                    del tutor.topics[topic]["messages"][0]
                 if user_input.content.lower() == "next":
                     async with thread.typing():
                         i += 1
                         asyncio.create_task(tutor.chat(topic, i, thread))
                         await thread.send("To end the session, type !reset")
+                        
                 elif user_input.content.lower() == "reset":
                     async with thread.typing():
                         tutor.reset(topic)
@@ -69,7 +72,8 @@ async def start_conversation(ctx, *args):
                 del tutor_instances[topic]  # remove the instance from the dictionary
                 await thread.delete()  # delete the thread
                 break
-            except Exception:
+            except Exception as e:
+                print(e)
                 await thread.send("Something went wrong. Try again later or start a new session.")
     else:
         await ctx.send("To see what I can do, please use !help")
@@ -96,6 +100,8 @@ async def study_bud(ctx, *args):
         while True:
             try:
                 user_input = await bot.wait_for('message', timeout=600.0, check=lambda message: message.author == ctx.author and message.channel == thread)
+                if len(tutor.topics[topic]["messages"]) > 5:
+                    del tutor.topics[topic]["messages"][0]
                 if user_input.content.lower() == "reset":
                     async with thread.typing():
                         await thread.send("Chat reset to defaults.")
@@ -108,6 +114,8 @@ async def study_bud(ctx, *args):
                 del tutor_instances[topic]  # remove the instance from the dictionary
                 await thread.delete()  # delete the thread
                 break
+            except Exception:
+                await thread.send("Something went wrong. Try again later or start a new session.")
 @bot.command(name='reset')
 async def reset_conversation(ctx):
     thread = ctx.channel
