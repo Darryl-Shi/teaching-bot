@@ -69,6 +69,8 @@ async def start_conversation(ctx, *args):
                 del tutor_instances[topic]  # remove the instance from the dictionary
                 await thread.delete()  # delete the thread
                 break
+            except Exception:
+                await thread.send("Something went wrong. Try again later or start a new session.")
     else:
         await ctx.send("To see what I can do, please use !help")
 @bot.command(name='studybud')
