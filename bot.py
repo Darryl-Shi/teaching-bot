@@ -50,8 +50,8 @@ async def start_conversation(ctx, *args):
         while True:
             try:
                 user_input = await bot.wait_for('message', timeout=600.0, check=lambda message: message.author == ctx.author and message.channel == thread)
-                if len(tutor.topics[topic]["messages"]) > 5:
-                    del tutor.topics[topic]["messages"][0]
+                if len(tutor.topics[topic]["messages"]) > 3:
+                    del tutor.topics[topic]["messages"][1]
                 if user_input.content.lower() == "next":
                     async with thread.typing():
                         i += 1
@@ -100,8 +100,8 @@ async def study_bud(ctx, *args):
         while True:
             try:
                 user_input = await bot.wait_for('message', timeout=600.0, check=lambda message: message.author == ctx.author and message.channel == thread)
-                if len(tutor.topics[topic]["messages"]) > 5:
-                    del tutor.topics[topic]["messages"][0]
+                if len(tutor.topics[topic]["messages"]) > 3:
+                    del tutor.topics[topic]["messages"][1]
                 if user_input.content.lower() == "reset":
                     async with thread.typing():
                         await thread.send("Chat reset to defaults.")
