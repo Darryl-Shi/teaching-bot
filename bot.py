@@ -128,4 +128,13 @@ async def display_help(ctx):
     help_msg = "To start a conversation with me, use the !learn or the !studybud command followed by the topic you want to learn about/study. For example: `!learn python` or `!studybud python` command. \n\nWhile in a conversation with me, you can just use regular English to ask me questions. The !learn command teaches you about the topic you ask about and the !studybud command turns the bot into a study buddy who can answer any questions you have about your work. If you want to end the conversation, type `!reset`."
     await ctx.send(help_msg)
 
+@bot.command(name='admin-reset-threads')
+async def reset_threads(ctx):
+    if ctx.author.id == 508501589133099021:
+        for thread in ctx.channel.threads:
+            await thread.delete()
+        await ctx.send("Threads deleted.")
+    else:
+        await ctx.send("You do not have permission to use this command.")
+
 bot.run(TOKEN)
